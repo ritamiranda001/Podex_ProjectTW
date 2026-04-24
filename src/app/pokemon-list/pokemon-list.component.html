@@ -1,107 +1,127 @@
-<div class="container">
-
-  <div class="controls-card">
-    <h2>Adicionar novo Pokémon</h2>
-
-    <div class="row g-2">
-      <div class="col-md-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Nome"
-          [(ngModel)]="newPokemonName"
-        >
+<div class="container py-4">
+  <div class="hero-card mb-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <p class="eyebrow mb-2">Pokédex em tempo real</p>
+        <h2 class="mb-3">Pokémon reais, pesquisa instantânea e paginação.</h2>
+        <p class="hero-copy mb-0">
+          Os dados vêm diretamente da PokeAPI. Usa a pesquisa para filtrar a
+          página atual e navega entre resultados com Bootstrap.
+        </p>
       </div>
 
-      <div class="col-md-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Tipo"
-          [(ngModel)]="newPokemonType"
-        >
+      <div class="col-lg-4">
+        <div class="stats-card">
+          <span class="stats-label">Página</span>
+          <strong>#{{ currentPage }}</strong>
+          <span class="stats-label">Resultados por página</span>
+          <strong>{{ limit }}</strong>
+        </div>
       </div>
-
-      <div class="col-md-2">
-        <input
-          type="number"
-          class="form-control"
-          min="1"
-          placeholder="Nível"
-          [(ngModel)]="newPokemonLevel"
-        >
-      </div>
-
-      <div class="col-md-4">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Link da imagem (opcional)"
-          [(ngModel)]="newPokemonImage"
-        >
-      </div>
-    </div>
-
-    <div class="button-row">
-      <button class="btn btn-primary" (click)="addPokemon()">
-        Adicionar Pokémon
-      </button>
-
-      <button class="btn btn-secondary" (click)="resetPokemons()">
-        Reset
-      </button>
     </div>
   </div>
 
-  @if (pokemons.length === 0) {
-    <div class="empty-state">
-      <p>Sem Pokémon disponíveis.</p>
+  <div class="toolbar-card mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-8">
+        <label for="search" class="form-label">Pesquisar Pokémon</label>
+        <input
+          id="search"
+          type="text"
+          class="form-control form-control-lg"
+          placeholder="Ex.: pikachu"
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+
+      <div class="col-md-4">
+        <label for="limit" class="form-label">Itens por página</label>
+        <select
+          id="limit"
+          class="form-select form-select-lg"
+          [(ngModel)]="limit"
+          (ngModelChange)="offset = 0; loadPokemons()"
+        >
+          <option [ngValue]="12">12</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="24">24</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger shadow-sm" role="alert">
+      {{ errorMessage }}
     </div>
   }
 
-  @if (pokemons.length > 0) {
-    <div class="grid">
-      @for (pokemon of pokemons; track pokemon.name) {
-        <div class="pokemon-card">
-          <img
-            [src]="pokemon.image"
-            [alt]="pokemon.name"
-            class="pokemon-image"
-          >
-
-          <h3>{{ pokemon.name }}</h3>
-
-          <span
-            class="badge pokemon-type"
-            [ngClass]="{
-              'bg-danger': pokemon.type === 'Fire',
-              'bg-primary': pokemon.type === 'Water',
-              'bg-success': pokemon.type === 'Grass',
-              'bg-warning text-dark': pokemon.type === 'Electric',
-              'bg-secondary': pokemon.type !== 'Fire' &&
-                              pokemon.type !== 'Water' &&
-                              pokemon.type !== 'Grass' &&
-                              pokemon.type !== 'Electric'
-            }"
-          >
-            {{ pokemon.type }}
-          </span>
-
-          <p class="pokemon-level">Nível: {{ pokemon.level }}</p>
-
-          @if (pokemon.level > 20) {
-            <p class="strong-label">🔥 Forte!</p>
-          }
-
-          <button
-            class="btn btn-sm btn-danger mt-2"
-            (click)="removePokemon(pokemon.name)"
-          >
-            Remover
-          </button>
-        </div>
-      }
+  @if (isLoading) {
+    <div class="loading-state text-center py-5">
+      <div class="spinner-border text-danger" role="status"></div>
+      <p class="mt-3 mb-0">A carregar Pokémon...</p>
     </div>
+  } @else {
+    @if (filteredPokemons.length === 0) {
+      <div class="empty-state">
+        <p class="mb-1">Nenhum Pokémon encontrado nesta página.</p>
+        <small>Tenta outro termo de pesquisa ou muda de página.</small>
+      </div>
+    }
+
+    @if (filteredPokemons.length > 0) {
+      <div class="row g-4">
+        @for (
+          pokemon of filteredPokemons;
+          track trackByPokemonId($index, pokemon)
+        ) {
+          <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="card pokemon-card h-100 border-0 shadow-sm">
+              <div class="pokemon-image-wrap">
+                <img
+                  [src]="pokemon.image"
+                  [alt]="pokemon.name"
+                  class="pokemon-image"
+                />
+              </div>
+
+              <div class="card-body text-center">
+                <span class="pokemon-number">#{{ pokemon.id }}</span>
+                <h3 class="pokemon-name text-capitalize">{{ pokemon.name }}</h3>
+                <p class="pokemon-url mb-0">{{ pokemon.url }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
   }
 
+  <div class="pagination-card mt-4">
+    <div
+      class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3"
+    >
+      <p class="mb-0 pagination-copy">
+        A mostrar resultados desde o índice {{ offset + 1 }}.
+      </p>
+
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-outline-secondary"
+          (click)="previousPage()"
+          [disabled]="!hasPreviousPage || isLoading"
+        >
+          Anterior
+        </button>
+
+        <button
+          class="btn btn-danger"
+          (click)="nextPage()"
+          [disabled]="isLoading"
+        >
+          Seguinte
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

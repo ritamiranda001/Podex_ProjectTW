@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
+import { Pokemon } from '../models/pokemon';
+import { PokemonService } from '../services/pokemon.service';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -9,100 +12,79 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './pokemon-list.component.html',
   styleUrl: './pokemon-list.component.css',
 })
-export class PokemonListComponent {
-  initialPokemons = [
-    {
-      name: 'Pikachu',
+export class PokemonListComponent implements OnInit {
+  private pokemonService = inject(PokemonService);
+  pokemons: Pokemon[] = [];
+  searchTerm = '';
+  limit = 20;
+  offset = 0;
+  isLoading = false;
+  errorMessage = '';
 
-      type: 'Electric',
-
-      level: 25,
-
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-    },
-
-    {
-      name: 'Charmander',
-
-      type: 'Fire',
-
-      level: 18,
-
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
-    },
-
-    {
-      name: 'Squirtle',
-
-      type: 'Water',
-
-      level: 16,
-
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
-    },
-
-    {
-      name: 'Bulbasaur',
-
-      type: 'Grass',
-
-      level: 20,
-
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-    },
-  ];
-
-  pokemons = [...this.initialPokemons];
-
-  newPokemonName = '';
-
-  newPokemonType = '';
-
-  newPokemonLevel = 1;
-
-  newPokemonImage = '';
-
-  removePokemon(name: string) {
-    this.pokemons = this.pokemons.filter((pokemon) => pokemon.name !== name);
+  ngOnInit() {
+    this.loadPokemons();
   }
 
-  resetPokemons() {
-    this.pokemons = [...this.initialPokemons];
+  get filteredPokemons() {
+    const normalizedSearch = this.searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return this.pokemons;
+    }
+
+    return this.pokemons.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(normalizedSearch),
+    );
   }
 
-  addPokemon() {
-    if (
-      this.newPokemonName.trim() === '' ||
-      this.newPokemonType.trim() === ''
-    ) {
+  get currentPage() {
+    return Math.floor(this.offset / this.limit) + 1;
+  }
+
+  get hasPreviousPage() {
+    return this.offset >= this.limit;
+  }
+
+  loadPokemons() {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.pokemonService.getPokemons(this.limit, this.offset).subscribe({
+      next: (data) => {
+        this.pokemons = data.results.map((pokemon) => {
+          const id = Number(pokemon.url.split('/')[6]);
+
+          return {
+            id,
+            name: pokemon.name,
+            url: pokemon.url,
+            image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
+          };
+        });
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Não foi possível carregar a Pokédex.';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  nextPage() {
+    this.offset += this.limit;
+    this.loadPokemons();
+  }
+
+  previousPage() {
+    if (!this.hasPreviousPage) {
       return;
     }
 
-    const imageUrl =
-      this.newPokemonImage.trim() !== ''
-        ? this.newPokemonImage
-        : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png';
+    this.offset -= this.limit;
+    this.loadPokemons();
+  }
 
-    this.pokemons.push({
-      name: this.newPokemonName,
-
-      type: this.newPokemonType,
-
-      level: this.newPokemonLevel,
-
-      image: imageUrl,
-    });
-
-    this.newPokemonName = '';
-
-    this.newPokemonType = '';
-
-    this.newPokemonLevel = 1;
-
-    this.newPokemonImage = '';
+  trackByPokemonId(index: number, pokemon: Pokemon) {
+    return pokemon.id;
   }
 }
