@@ -1,0 +1,107 @@
+<div class="container">
+
+  <div class="controls-card">
+    <h2>Adicionar novo Pokémon</h2>
+
+    <div class="row g-2">
+      <div class="col-md-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Nome"
+          [(ngModel)]="newPokemonName"
+        >
+      </div>
+
+      <div class="col-md-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Tipo"
+          [(ngModel)]="newPokemonType"
+        >
+      </div>
+
+      <div class="col-md-2">
+        <input
+          type="number"
+          class="form-control"
+          min="1"
+          placeholder="Nível"
+          [(ngModel)]="newPokemonLevel"
+        >
+      </div>
+
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Link da imagem (opcional)"
+          [(ngModel)]="newPokemonImage"
+        >
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="btn btn-primary" (click)="addPokemon()">
+        Adicionar Pokémon
+      </button>
+
+      <button class="btn btn-secondary" (click)="resetPokemons()">
+        Reset
+      </button>
+    </div>
+  </div>
+
+  @if (pokemons.length === 0) {
+    <div class="empty-state">
+      <p>Sem Pokémon disponíveis.</p>
+    </div>
+  }
+
+  @if (pokemons.length > 0) {
+    <div class="grid">
+      @for (pokemon of pokemons; track pokemon.name) {
+        <div class="pokemon-card">
+          <img
+            [src]="pokemon.image"
+            [alt]="pokemon.name"
+            class="pokemon-image"
+          >
+
+          <h3>{{ pokemon.name }}</h3>
+
+          <span
+            class="badge pokemon-type"
+            [ngClass]="{
+              'bg-danger': pokemon.type === 'Fire',
+              'bg-primary': pokemon.type === 'Water',
+              'bg-success': pokemon.type === 'Grass',
+              'bg-warning text-dark': pokemon.type === 'Electric',
+              'bg-secondary': pokemon.type !== 'Fire' &&
+                              pokemon.type !== 'Water' &&
+                              pokemon.type !== 'Grass' &&
+                              pokemon.type !== 'Electric'
+            }"
+          >
+            {{ pokemon.type }}
+          </span>
+
+          <p class="pokemon-level">Nível: {{ pokemon.level }}</p>
+
+          @if (pokemon.level > 20) {
+            <p class="strong-label">🔥 Forte!</p>
+          }
+
+          <button
+            class="btn btn-sm btn-danger mt-2"
+            (click)="removePokemon(pokemon.name)"
+          >
+            Remover
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+</div>

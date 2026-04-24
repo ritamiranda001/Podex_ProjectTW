@@ -1,0 +1,19 @@
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9f2ff 100%);
+  padding: 32px 16px;
+}
+
+.app-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #1f2937;
+}
+
+.app-subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
