@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { Pokemon } from '../models/pokemon';
 
 @Component({
   selector: 'app-pokemon-card',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './pokemon-card.component.html',
   styleUrl: './pokemon-card.component.css',
 })

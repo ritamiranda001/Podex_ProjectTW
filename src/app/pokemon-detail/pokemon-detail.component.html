@@ -1,0 +1,123 @@
+<div class="container py-4">
+  @if (isLoading()) {
+    <div class="loading-state text-center py-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">A carregar...</span>
+      </div>
+      <p class="mt-3 mb-0">A carregar Pokémon...</p>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger shadow-sm" role="alert">
+      {{ errorMessage() }}
+    </div>
+    <button class="btn btn-outline-secondary" (click)="goBack()">
+      ← Voltar
+    </button>
+  }
+
+  @if (pokemon(); as p) {
+    <button class="btn btn-outline-secondary btn-sm mb-4" (click)="goBack()">
+      ← Voltar à lista
+    </button>
+
+    @if (feedbackMessage()) {
+      <div
+        class="alert shadow-sm mb-3"
+        [class.alert-success]="teamService.isInTeam(p.id)"
+        [class.alert-warning]="!teamService.isInTeam(p.id)"
+        role="alert"
+      >
+        {{ feedbackMessage() }}
+      </div>
+    }
+
+    <div class="detail-card">
+      <div class="row g-4 align-items-start">
+        <!-- Left column: image, name, types, add button -->
+        <div class="col-md-4 text-center">
+          <div class="detail-img-wrap">
+            <img
+              [src]="
+                p.sprites.other['official-artwork'].front_default ||
+                p.sprites.front_default
+              "
+              [alt]="p.name"
+              class="detail-img"
+            />
+          </div>
+
+          <span class="detail-number">#{{ p.id }}</span>
+          <h1 class="detail-name text-capitalize">{{ p.name }}</h1>
+
+          <div class="types-row">
+            @for (t of p.types; track t.slot) {
+              <span
+                class="type-badge"
+                [style.background]="typeColor(t.type.name)"
+              >
+                {{ t.type.name }}
+              </span>
+            }
+          </div>
+
+          <button
+            class="btn mt-4 w-100"
+            [class.btn-danger]="!teamService.isInTeam(p.id)"
+            [class.btn-outline-secondary]="teamService.isInTeam(p.id)"
+            [disabled]="teamService.isInTeam(p.id)"
+            (click)="onAddToTeam()"
+            [attr.aria-label]="
+              teamService.isInTeam(p.id)
+                ? p.name + ' já está na equipa'
+                : 'Adicionar ' + p.name + ' à equipa'
+            "
+          >
+            @if (teamService.isInTeam(p.id)) {
+              ✓ Na equipa
+            } @else {
+              + Adicionar à equipa
+            }
+          </button>
+        </div>
+
+        <!-- Right column: info grid + stats -->
+        <div class="col-md-8">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Altura</span>
+              <span class="info-value">{{ p.height / 10 }} m</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Peso</span>
+              <span class="info-value">{{ p.weight / 10 }} kg</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Exp. base</span>
+              <span class="info-value">{{ p.base_experience }}</span>
+            </div>
+          </div>
+
+          <h2 class="stats-title">Estatísticas base</h2>
+
+          <div class="stats-list">
+            @for (stat of p.stats; track stat.stat.name) {
+              <div class="stat-row">
+                <span class="stat-name">{{ stat.stat.name }}</span>
+                <span class="stat-value">{{ stat.base_stat }}</span>
+                <div class="stat-track" aria-hidden="true">
+                  <div
+                    class="stat-fill"
+                    [style.width.%]="statPercent(stat.base_stat)"
+                    [style.background]="statColor(stat.base_stat)"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

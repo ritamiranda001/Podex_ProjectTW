@@ -2,16 +2,24 @@
   class="card pokemon-card h-100 border-0 shadow-sm"
   [class.in-team]="isInTeam"
 >
-  <div class="pokemon-image-wrap">
+  <a
+    class="pokemon-image-wrap"
+    [routerLink]="['/pokemon', pokemon.name]"
+    [attr.aria-label]="'Ver detalhes de ' + pokemon.name"
+  >
     <img [src]="pokemon.image" [alt]="pokemon.name" class="pokemon-image" />
     @if (isInTeam) {
       <span class="in-team-badge" aria-label="Na equipa">✓</span>
     }
-  </div>
+  </a>
 
   <div class="card-body text-center">
     <span class="pokemon-number">#{{ pokemon.id }}</span>
-    <h3 class="pokemon-name text-capitalize">{{ pokemon.name }}</h3>
+    <h3 class="pokemon-name text-capitalize">
+      <a [routerLink]="['/pokemon', pokemon.name]" class="pokemon-name-link">{{
+        pokemon.name
+      }}</a>
+    </h3>
     <button
       class="btn btn-sm mt-2 w-100"
       [class.btn-danger]="!isInTeam"
