@@ -8,7 +8,12 @@
 }
 
 .team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .team-title {
@@ -33,16 +38,97 @@
   font-weight: 700;
 }
 
+.drag-hint {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
 .team-empty {
   color: #6b7280;
   margin: 0;
 }
 
+/* CDK drag-and-drop list */
+.team-drag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .team-slot {
+  width: calc((100% - 3.75rem) / 6);
+  min-width: 90px;
   padding: 0.5rem;
   border-radius: 16px;
   background: linear-gradient(180deg, #fff7ed 0%, #ffffff 100%);
   border: 1px solid rgba(220, 38, 38, 0.1);
+  box-sizing: border-box;
+  cursor: grab;
+}
+
+.team-slot:active {
+  cursor: grabbing;
+}
+
+/* CDK drag preview (ghost while dragging) */
+.team-slot.cdk-drag-preview {
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  border-radius: 16px;
+  opacity: 0.95;
+}
+
+/* Original element while being dragged */
+.team-slot.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+/* Drop animation */
+.team-drag-list.cdk-drop-list-dragging .team-slot:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Placeholder slot that shows the drop target */
+.drag-placeholder {
+  min-width: 90px;
+  height: 140px;
+  border: 2px dashed #dc2626;
+  border-radius: 16px;
+  background: rgba(220, 38, 38, 0.04);
+}
+
+/* Drag handle — full-width red bar at top of slot */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  margin: -0.5rem -0.5rem 0.6rem;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border-radius: 12px 12px 0 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.drag-handle:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-label {
+  line-height: 1;
 }
 
 .team-img-wrap {
@@ -67,4 +153,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 575px) {
+  .team-slot {
+    width: calc((100% - 1.5rem) / 3);
+    min-width: 80px;
+  }
 }

@@ -4,6 +4,9 @@
       A minha equipa
       <span class="team-count">{{ teamService.count() }}/6</span>
     </h2>
+    @if (teamService.team().length > 1) {
+      <span class="drag-hint">Arrasta para reordenar</span>
+    }
   </div>
 
   @if (teamService.team().length === 0) {
@@ -12,26 +15,48 @@
       <strong>+ Equipa</strong> para começar.
     </p>
   } @else {
-    <div class="row g-3">
+    <div
+      class="team-drag-list"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      [cdkDropListData]="teamService.team()"
+      (cdkDropListDropped)="onDrop($event)"
+    >
       @for (pokemon of teamService.team(); track pokemon.id) {
-        <div class="col-4 col-sm-2">
-          <div class="team-slot text-center">
-            <div class="team-img-wrap">
-              <img
-                [src]="pokemon.image"
-                [alt]="pokemon.name"
-                class="team-img"
-              />
-            </div>
-            <p class="team-name text-capitalize">{{ pokemon.name }}</p>
-            <button
-              class="btn btn-sm btn-outline-danger"
-              (click)="teamService.removeFromTeam(pokemon.id)"
-              [attr.aria-label]="'Remover ' + pokemon.name + ' da equipa'"
+        <div class="team-slot text-center" cdkDrag [cdkDragData]="pokemon">
+          <div
+            class="drag-handle"
+            cdkDragHandle
+            aria-label="Arrastar para reordenar"
+          >
+            <svg
+              width="16"
+              height="10"
+              viewBox="0 0 16 10"
+              fill="currentColor"
+              aria-hidden="true"
             >
-              Remover
-            </button>
+              <rect y="0" width="16" height="2" rx="1" />
+              <rect y="4" width="16" height="2" rx="1" />
+              <rect y="8" width="16" height="2" rx="1" />
+            </svg>
+            <span class="drag-label">mover</span>
           </div>
+
+          <div class="team-img-wrap">
+            <img [src]="pokemon.image" [alt]="pokemon.name" class="team-img" />
+          </div>
+          <p class="team-name text-capitalize">{{ pokemon.name }}</p>
+          <button
+            class="btn btn-sm btn-outline-danger"
+            (click)="teamService.removeFromTeam(pokemon.id)"
+            [attr.aria-label]="'Remover ' + pokemon.name + ' da equipa'"
+          >
+            Remover
+          </button>
+
+          <!-- placeholder shown while dragging -->
+          <div *cdkDragPlaceholder class="drag-placeholder"></div>
         </div>
       }
     </div>

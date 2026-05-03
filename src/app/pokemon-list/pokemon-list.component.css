@@ -1,3 +1,34 @@
+/* Stagger float offset so Pokémon don't bob in sync */
+.col-sm-6:nth-child(2n) .pokemon-image {
+  animation-delay: -0.8s;
+}
+.col-sm-6:nth-child(3n) .pokemon-image {
+  animation-delay: -1.6s;
+}
+.col-sm-6:nth-child(4n) .pokemon-image {
+  animation-delay: -2.4s;
+}
+.col-sm-6:nth-child(5n) .pokemon-image {
+  animation-delay: -0.4s;
+}
+.col-sm-6:nth-child(6n) .pokemon-image {
+  animation-delay: -2s;
+}
+
+/* Stagger card entry */
+.col-sm-6:nth-child(2n) .pokemon-card {
+  animation-delay: 0.06s;
+}
+.col-sm-6:nth-child(3n) .pokemon-card {
+  animation-delay: 0.12s;
+}
+.col-sm-6:nth-child(4n) .pokemon-card {
+  animation-delay: 0.18s;
+}
+.col-sm-6:nth-child(5n) .pokemon-card {
+  animation-delay: 0.22s;
+}
+
 .hero-card,
 .toolbar-card,
 .pagination-card,

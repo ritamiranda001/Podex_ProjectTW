@@ -1,19 +1,151 @@
-.app-container {
+.app-shell {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8f9fa 0%, #e9f2ff 100%);
-  padding: 32px 16px;
 }
 
-.app-title {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #1f2937;
+/* ===== Pokédex Header ===== */
+.dex-header {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(153, 27, 27, 0.4);
 }
 
-.app-subtitle {
-  text-align: center;
-  color: #6b7280;
-  margin-bottom: 32px;
+/* Bottom ridge line */
+.dex-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #7f1d1d, #fca5a5 50%, #7f1d1d);
+  opacity: 0.5;
+}
+
+/* Big camera lens */
+.dex-lens {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #bfdbfe, #1d4ed8 55%, #1e3a8a);
+  border: 5px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.12),
+    0 6px 16px rgba(0, 0, 0, 0.35),
+    inset 0 3px 6px rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.dex-sensor-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.dex-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dex-dot {
+  display: block;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+.dex-dot--red {
+  background: #f87171;
+}
+.dex-dot--yellow {
+  background: #fbbf24;
+}
+.dex-dot--green {
+  background: #4ade80;
+}
+
+/* Title */
+.dex-title-area {
+  flex: 1;
+}
+
+.dex-title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 0.1rem;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.dex-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Decorative pokéball half (right side) */
+.dex-ball-deco {
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 14px solid rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.dex-ball-deco::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  right: -14px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-50%);
+}
+
+.dex-ball-deco::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 10px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Main content */
+.dex-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (max-width: 575px) {
+  .dex-header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .dex-lens {
+    width: 44px;
+    height: 44px;
+  }
 }

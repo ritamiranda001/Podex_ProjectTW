@@ -42,6 +42,16 @@ export class TeamService {
     this.saveToStorage();
   }
 
+  reorder(previousIndex: number, currentIndex: number): void {
+    this._team.update((team) => {
+      const reordered = [...team];
+      const [moved] = reordered.splice(previousIndex, 1);
+      reordered.splice(currentIndex, 0, moved);
+      return reordered;
+    });
+    this.saveToStorage();
+  }
+
   private saveToStorage(): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this._team()));
   }

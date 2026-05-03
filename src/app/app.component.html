@@ -1,8 +1,22 @@
-<div class="app-container">
-  <h1 class="app-title">Pokédex</h1>
-  <p class="app-subtitle">A tua primeira app Angular com Pokémon</p>
+<div class="app-shell">
+  <header class="dex-header">
+    <div class="dex-sensor-cluster">
+      <div class="dex-lens" aria-hidden="true"></div>
+      <div class="dex-indicators" aria-hidden="true">
+        <span class="dex-dot dex-dot--red"></span>
+        <span class="dex-dot dex-dot--yellow"></span>
+        <span class="dex-dot dex-dot--green"></span>
+      </div>
+    </div>
+    <div class="dex-title-area">
+      <h1 class="dex-title">Pokédex</h1>
+      <p class="dex-subtitle">Escolhe a tua equipa</p>
+    </div>
+    <div class="dex-ball-deco" aria-hidden="true"></div>
+  </header>
 
-  <app-pokemon-team />
-
-  <router-outlet />
+  <main class="dex-main">
+    <app-pokemon-team />
+    <router-outlet />
+  </main>
 </div>
