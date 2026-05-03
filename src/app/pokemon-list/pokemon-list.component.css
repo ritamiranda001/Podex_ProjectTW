@@ -31,7 +31,6 @@
 
 .hero-card,
 .toolbar-card,
-.pagination-card,
 .empty-state,
 .loading-state {
   background: rgba(255, 255, 255, 0.92);
@@ -42,7 +41,6 @@
 
 .hero-card,
 .toolbar-card,
-.pagination-card,
 .loading-state,
 .empty-state {
   padding: 1.5rem;
@@ -90,10 +88,18 @@
   color: #7f1d1d;
 }
 
+.scroll-sentinel {
+  height: 1px;
+  margin-top: 1rem;
+}
+
+.load-more-spinner {
+  color: #4b5563;
+}
+
 @media (max-width: 767px) {
   .hero-card,
   .toolbar-card,
-  .pagination-card,
   .loading-state,
   .empty-state {
     padding: 1.1rem;

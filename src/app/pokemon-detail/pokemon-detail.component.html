@@ -99,7 +99,20 @@
             </div>
           </div>
 
-          <h2 class="stats-title">Estatísticas base</h2>
+          <h2 class="stats-title">Habilidades</h2>
+
+          <div class="abilities-row">
+            @for (a of p.abilities; track a.slot) {
+              <span class="ability-badge" [class.ability-hidden]="a.is_hidden">
+                {{ a.ability.name }}
+                @if (a.is_hidden) {
+                  <span class="ability-hidden-label">oculta</span>
+                }
+              </span>
+            }
+          </div>
+
+          <h2 class="stats-title mt-4">Estatísticas base</h2>
 
           <div class="stats-list">
             @for (stat of p.stats; track stat.stat.name) {
@@ -119,5 +132,20 @@
         </div>
       </div>
     </div>
+
+    @if (adjacentPokemon().length > 0) {
+      <div class="adjacent-section">
+        <h2 class="adjacent-title">Pokémon adjacentes</h2>
+        <div class="adjacent-grid">
+          @for (adj of adjacentPokemon(); track adj.id) {
+            <app-pokemon-card
+              [pokemon]="adj"
+              [isInTeam]="teamService.isInTeam(adj.id)"
+              (addToTeam)="onAddAdjacentToTeam($event)"
+            />
+          }
+        </div>
+      </div>
+    }
   }
 </div>
