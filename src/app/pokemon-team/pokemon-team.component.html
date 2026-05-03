@@ -1,0 +1,39 @@
+<div class="team-section">
+  <div class="team-header">
+    <h2 class="team-title">
+      A minha equipa
+      <span class="team-count">{{ teamService.count() }}/6</span>
+    </h2>
+  </div>
+
+  @if (teamService.team().length === 0) {
+    <p class="team-empty">
+      Ainda não tens Pokémon na equipa. Clica em
+      <strong>+ Equipa</strong> para começar.
+    </p>
+  } @else {
+    <div class="row g-3">
+      @for (pokemon of teamService.team(); track pokemon.id) {
+        <div class="col-4 col-sm-2">
+          <div class="team-slot text-center">
+            <div class="team-img-wrap">
+              <img
+                [src]="pokemon.image"
+                [alt]="pokemon.name"
+                class="team-img"
+              />
+            </div>
+            <p class="team-name text-capitalize">{{ pokemon.name }}</p>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="teamService.removeFromTeam(pokemon.id)"
+              [attr.aria-label]="'Remover ' + pokemon.name + ' da equipa'"
+            >
+              Remover
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -70,27 +70,23 @@
     }
 
     @if (filteredPokemons.length > 0) {
+      @if (feedbackMessage) {
+        <div class="alert alert-warning shadow-sm mb-3" role="alert">
+          {{ feedbackMessage }}
+        </div>
+      }
+
       <div class="row g-4">
         @for (
           pokemon of filteredPokemons;
           track trackByPokemonId($index, pokemon)
         ) {
           <div class="col-sm-6 col-lg-4 col-xl-3">
-            <div class="card pokemon-card h-100 border-0 shadow-sm">
-              <div class="pokemon-image-wrap">
-                <img
-                  [src]="pokemon.image"
-                  [alt]="pokemon.name"
-                  class="pokemon-image"
-                />
-              </div>
-
-              <div class="card-body text-center">
-                <span class="pokemon-number">#{{ pokemon.id }}</span>
-                <h3 class="pokemon-name text-capitalize">{{ pokemon.name }}</h3>
-                <p class="pokemon-url mb-0">{{ pokemon.url }}</p>
-              </div>
-            </div>
+            <app-pokemon-card
+              [pokemon]="pokemon"
+              [isInTeam]="teamService.isInTeam(pokemon.id)"
+              (addToTeam)="onAddToTeam($event)"
+            />
           </div>
         }
       </div>

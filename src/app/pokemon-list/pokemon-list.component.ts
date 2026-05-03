@@ -3,26 +3,40 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { Pokemon } from '../models/pokemon';
+import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
 import { PokemonService } from '../services/pokemon.service';
+import { TeamService } from '../services/team.service';
 
 @Component({
   selector: 'app-pokemon-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PokemonCardComponent],
   templateUrl: './pokemon-list.component.html',
   styleUrl: './pokemon-list.component.css',
 })
 export class PokemonListComponent implements OnInit {
   private pokemonService = inject(PokemonService);
+  protected teamService = inject(TeamService);
   pokemons: Pokemon[] = [];
   searchTerm = '';
   limit = 20;
   offset = 0;
   isLoading = false;
   errorMessage = '';
+  feedbackMessage = '';
 
   ngOnInit() {
     this.loadPokemons();
+  }
+
+  onAddToTeam(pokemon: Pokemon): void {
+    const result = this.teamService.addToTeam(pokemon);
+    if (!result.success) {
+      this.feedbackMessage = result.message;
+      setTimeout(() => {
+        this.feedbackMessage = '';
+      }, 3000);
+    }
   }
 
   get filteredPokemons() {

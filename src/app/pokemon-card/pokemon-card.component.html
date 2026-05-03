@@ -1,0 +1,34 @@
+<div
+  class="card pokemon-card h-100 border-0 shadow-sm"
+  [class.in-team]="isInTeam"
+>
+  <div class="pokemon-image-wrap">
+    <img [src]="pokemon.image" [alt]="pokemon.name" class="pokemon-image" />
+    @if (isInTeam) {
+      <span class="in-team-badge" aria-label="Na equipa">✓</span>
+    }
+  </div>
+
+  <div class="card-body text-center">
+    <span class="pokemon-number">#{{ pokemon.id }}</span>
+    <h3 class="pokemon-name text-capitalize">{{ pokemon.name }}</h3>
+    <button
+      class="btn btn-sm mt-2 w-100"
+      [class.btn-danger]="!isInTeam"
+      [class.btn-outline-secondary]="isInTeam"
+      [disabled]="isInTeam"
+      (click)="addToTeam.emit(pokemon)"
+      [attr.aria-label]="
+        isInTeam
+          ? pokemon.name + ' já está na equipa'
+          : 'Adicionar ' + pokemon.name + ' à equipa'
+      "
+    >
+      @if (isInTeam) {
+        Na equipa
+      } @else {
+        + Equipa
+      }
+    </button>
+  </div>
+</div>
