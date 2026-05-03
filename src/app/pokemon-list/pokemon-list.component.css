@@ -97,6 +97,49 @@
   color: #4b5563;
 }
 
+/* ── Type filter chips ────────────────────────────────────────────────── */
+.type-filter-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+}
+
+.type-chip {
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+}
+
+.type-chip:hover {
+  background: var(--chip-color, #dc2626);
+  border-color: var(--chip-color, #dc2626);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.type-chip.active {
+  background: var(--chip-color, #dc2626);
+  border-color: var(--chip-color, #dc2626);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Todos chip has no --chip-color so use default red */
+.type-chip:first-child {
+  --chip-color: #dc2626;
+}
+
 @media (max-width: 767px) {
   .hero-card,
   .toolbar-card,
@@ -104,4 +147,168 @@
   .empty-state {
     padding: 1.1rem;
   }
+}
+
+/* ── Stats card layout ──────────────────────────────────────────────── */
+.stats-row {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.fav-count {
+  color: #dc2626;
+}
+
+/* ── Pokémon of the Day ─────────────────────────────────────────────── */
+.pod-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(153, 27, 27, 0.15);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pod-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7f1d1d;
+}
+
+.pod-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: #991b1b;
+  font-weight: 700;
+  transition: opacity 0.18s;
+}
+
+.pod-link:hover {
+  opacity: 0.75;
+}
+
+.pod-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.pod-name {
+  font-size: 0.9rem;
+}
+
+/* ── Sort buttons ────────────────────────────────────────────────────── */
+.sort-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sort-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.sort-btn:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.sort-btn.active {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
+/* ── Favorites chip ──────────────────────────────────────────────────── */
+.fav-chip {
+  --chip-color: #dc2626;
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────────────── */
+:host-context(body.dark-mode) .hero-card,
+:host-context(body.dark-mode) .toolbar-card,
+:host-context(body.dark-mode) .loading-state,
+:host-context(body.dark-mode) .empty-state {
+  background: rgba(15, 23, 42, 0.96);
+  border-color: rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .hero-card h2 {
+  color: #f1f5f9;
+}
+
+:host-context(body.dark-mode) .hero-copy,
+:host-context(body.dark-mode) .pagination-copy,
+:host-context(body.dark-mode) .empty-state {
+  color: #94a3b8;
+}
+
+:host-context(body.dark-mode) .stats-card {
+  background: linear-gradient(
+    135deg,
+    rgba(69, 10, 10, 0.4),
+    rgba(30, 41, 59, 0.6)
+  );
+}
+
+:host-context(body.dark-mode) .stats-card strong {
+  color: #fca5a5;
+}
+
+:host-context(body.dark-mode) .stats-label,
+:host-context(body.dark-mode) .pod-label {
+  color: #fca5a5;
+}
+
+:host-context(body.dark-mode) .pod-link {
+  color: #fca5a5;
+}
+
+:host-context(body.dark-mode) .type-chip {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+}
+
+:host-context(body.dark-mode) .form-control {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .sort-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+}
+
+:host-context(body.dark-mode) .sort-btn.active {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
 }

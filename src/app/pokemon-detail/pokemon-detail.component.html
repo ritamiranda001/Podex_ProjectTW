@@ -1,9 +1,11 @@
 <div class="container py-4">
   @if (isLoading()) {
     <div class="loading-state text-center py-5">
-      <div class="spinner-border text-danger" role="status">
-        <span class="visually-hidden">A carregar...</span>
-      </div>
+      <div
+        class="spinner-border"
+        role="status"
+        [style.color]="'var(--type-primary, #dc2626)'"
+      ></div>
       <p class="mt-3 mb-0">A carregar Pokémon...</p>
     </div>
   }
@@ -18,61 +20,108 @@
   }
 
   @if (pokemon(); as p) {
-    <button class="btn btn-outline-secondary btn-sm mb-4" (click)="goBack()">
-      ← Voltar à lista
-    </button>
+    <!-- Nav row -->
+    <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+      <button class="btn back-btn" (click)="goBack()">← Voltar</button>
+      @if (feedbackMessage()) {
+        <div class="feedback-toast" role="alert">{{ feedbackMessage() }}</div>
+      }
+    </div>
 
-    @if (feedbackMessage()) {
-      <div
-        class="alert shadow-sm mb-3"
-        [class.alert-success]="teamService.isInTeam(p.id)"
-        [class.alert-warning]="!teamService.isInTeam(p.id)"
-        role="alert"
-      >
-        {{ feedbackMessage() }}
-      </div>
-    }
-
-    <div class="detail-card">
-      <div class="row g-4 align-items-start">
-        <!-- Left column: image, name, types, add button -->
-        <div class="col-md-4 text-center">
-          <div class="detail-img-wrap">
+    <!-- HERO CARD -->
+    <div class="detail-card mb-4">
+      <div class="row g-0 align-items-stretch">
+        <!-- Left: image -->
+        <div
+          class="col-md-5 d-flex flex-column align-items-center justify-content-center poke-img-col"
+        >
+          <div class="poke-img-wrap" [class.is-shiny]="isShiny()">
+            @if (isCrying()) {
+              <div class="sound-ring r1" aria-hidden="true"></div>
+              <div class="sound-ring r2" aria-hidden="true"></div>
+              <div class="sound-ring r3" aria-hidden="true"></div>
+            }
             <img
-              [src]="
-                p.sprites.other['official-artwork'].front_default ||
-                p.sprites.front_default
-              "
+              [src]="currentSprite()"
               [alt]="p.name"
-              class="detail-img"
+              class="poke-hero-img"
+              [class.shiny]="isShiny()"
             />
+            @if (isShiny()) {
+              <div class="shiny-shimmer" aria-hidden="true"></div>
+            }
           </div>
 
-          <span class="detail-number">#{{ p.id }}</span>
-          <h1 class="detail-name text-capitalize">{{ p.name }}</h1>
+          <div class="poke-controls mt-3">
+            <button
+              class="ctrl-btn"
+              [class.ctrl-active]="isShiny()"
+              (click)="toggleShiny()"
+            >
+              ✨ Shiny
+            </button>
+            <button
+              class="ctrl-btn"
+              [class.ctrl-active]="isCrying()"
+              (click)="playCry()"
+            >
+              🔊 Grito
+            </button>
+          </div>
+        </div>
 
-          <div class="types-row">
+        <!-- Right: info -->
+        <div class="col-md-7 poke-info-col">
+          <div class="badge-row">
+            @if (species()?.is_legendary) {
+              <span class="poke-badge legendary">★ Lendário</span>
+            }
+            @if (species()?.is_mythical) {
+              <span class="poke-badge mythical">✦ Mítico</span>
+            }
+          </div>
+
+          <span class="poke-number">#{{ p.id }}</span>
+          <h1 class="poke-name text-capitalize">{{ p.name }}</h1>
+
+          @if (genus()) {
+            <p class="poke-genus">{{ genus() }}</p>
+          }
+
+          <div class="types-row mb-3">
             @for (t of p.types; track t.slot) {
               <span
                 class="type-badge"
                 [style.background]="typeColor(t.type.name)"
+                >{{ t.type.name }}</span
               >
-                {{ t.type.name }}
-              </span>
             }
           </div>
 
+          @if (species()) {
+            @if (genderData().genderless) {
+              <span class="gender-chip gender-none mb-3">⚪ Sem género</span>
+            } @else {
+              <div class="gender-row mb-3">
+                @if (genderData().male > 0) {
+                  <span class="gender-chip gender-m"
+                    >♂ {{ genderData().male.toFixed(0) }}%</span
+                  >
+                }
+                @if (genderData().female > 0) {
+                  <span class="gender-chip gender-f"
+                    >♀ {{ genderData().female.toFixed(0) }}%</span
+                  >
+                }
+              </div>
+            }
+          }
+
           <button
-            class="btn mt-4 w-100"
-            [class.btn-danger]="!teamService.isInTeam(p.id)"
-            [class.btn-outline-secondary]="teamService.isInTeam(p.id)"
+            class="add-team-btn w-100"
+            [class.in-team]="teamService.isInTeam(p.id)"
             [disabled]="teamService.isInTeam(p.id)"
             (click)="onAddToTeam()"
-            [attr.aria-label]="
-              teamService.isInTeam(p.id)
-                ? p.name + ' já está na equipa'
-                : 'Adicionar ' + p.name + ' à equipa'
-            "
           >
             @if (teamService.isInTeam(p.id)) {
               ✓ Na equipa
@@ -80,62 +129,245 @@
               + Adicionar à equipa
             }
           </button>
-        </div>
 
-        <!-- Right column: info grid + stats -->
-        <div class="col-md-8">
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-label">Altura</span>
-              <span class="info-value">{{ p.height / 10 }} m</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Peso</span>
-              <span class="info-value">{{ p.weight / 10 }} kg</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Exp. base</span>
-              <span class="info-value">{{ p.base_experience }}</span>
-            </div>
-          </div>
-
-          <h2 class="stats-title">Habilidades</h2>
-
-          <div class="abilities-row">
-            @for (a of p.abilities; track a.slot) {
-              <span class="ability-badge" [class.ability-hidden]="a.is_hidden">
-                {{ a.ability.name }}
-                @if (a.is_hidden) {
-                  <span class="ability-hidden-label">oculta</span>
-                }
-              </span>
-            }
-          </div>
-
-          <h2 class="stats-title mt-4">Estatísticas base</h2>
-
-          <div class="stats-list">
-            @for (stat of p.stats; track stat.stat.name) {
-              <div class="stat-row">
-                <span class="stat-name">{{ stat.stat.name }}</span>
-                <span class="stat-value">{{ stat.base_stat }}</span>
-                <div class="stat-track" aria-hidden="true">
-                  <div
-                    class="stat-fill"
-                    [style.width.%]="statPercent(stat.base_stat)"
-                    [style.background]="statColor(stat.base_stat)"
-                  ></div>
-                </div>
-              </div>
-            }
-          </div>
+          @if (flavorText()) {
+            <blockquote class="flavor-text mt-3 mb-0">
+              "{{ flavorText() }}"
+            </blockquote>
+          }
         </div>
       </div>
     </div>
 
+    <!-- INFO GRID -->
+    <div class="section-card mb-4">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Altura</span
+          ><span class="info-value">{{ p.height / 10 }} m</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Peso</span
+          ><span class="info-value">{{ p.weight / 10 }} kg</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Exp. base</span
+          ><span class="info-value">{{ p.base_experience }}</span>
+        </div>
+        @if (species(); as s) {
+          <div class="info-item">
+            <span class="info-label">Taxa captura</span
+            ><span class="info-value">{{ s.capture_rate }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Felicidade</span
+            ><span class="info-value">{{ s.base_happiness }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Grupo ovo</span
+            ><span class="info-value text-capitalize">{{
+              s.egg_groups[0] ? s.egg_groups[0].name : "—"
+            }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ABILITIES -->
+    <div class="section-card mb-4">
+      <h2 class="section-title">Habilidades</h2>
+      <div class="abilities-row">
+        @for (a of p.abilities; track a.slot) {
+          <span class="ability-badge" [class.ability-hidden]="a.is_hidden">
+            {{ a.ability.name }}
+            @if (a.is_hidden) {
+              <span class="ability-hidden-label">oculta</span>
+            }
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- TYPE EFFECTIVENESS -->
+    @if (typeEffectiveness(); as eff) {
+      <div class="section-card mb-4">
+        <h2 class="section-title">Fraquezas &amp; Resistências</h2>
+        <div class="effectiveness-grid">
+          @if (eff.quad.length > 0) {
+            <div class="eff-row">
+              <span class="eff-mult quad">×4</span>
+              <div class="eff-types">
+                @for (t of eff.quad; track t) {
+                  <span
+                    class="type-badge sm"
+                    [style.background]="typeColor(t)"
+                    >{{ t }}</span
+                  >
+                }
+              </div>
+            </div>
+          }
+          @if (eff.double.length > 0) {
+            <div class="eff-row">
+              <span class="eff-mult double">×2</span>
+              <div class="eff-types">
+                @for (t of eff.double; track t) {
+                  <span
+                    class="type-badge sm"
+                    [style.background]="typeColor(t)"
+                    >{{ t }}</span
+                  >
+                }
+              </div>
+            </div>
+          }
+          @if (eff.half.length > 0) {
+            <div class="eff-row">
+              <span class="eff-mult half">½</span>
+              <div class="eff-types">
+                @for (t of eff.half; track t) {
+                  <span
+                    class="type-badge sm"
+                    [style.background]="typeColor(t)"
+                    >{{ t }}</span
+                  >
+                }
+              </div>
+            </div>
+          }
+          @if (eff.quarter.length > 0) {
+            <div class="eff-row">
+              <span class="eff-mult quarter">¼</span>
+              <div class="eff-types">
+                @for (t of eff.quarter; track t) {
+                  <span
+                    class="type-badge sm"
+                    [style.background]="typeColor(t)"
+                    >{{ t }}</span
+                  >
+                }
+              </div>
+            </div>
+          }
+          @if (eff.immune.length > 0) {
+            <div class="eff-row">
+              <span class="eff-mult immune">0×</span>
+              <div class="eff-types">
+                @for (t of eff.immune; track t) {
+                  <span
+                    class="type-badge sm"
+                    [style.background]="typeColor(t)"
+                    >{{ t }}</span
+                  >
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- STATS -->
+    <div class="section-card mb-4">
+      <div class="stats-header">
+        <div>
+          <h2 class="section-title mb-0">
+            Estatísticas
+            <span class="total-badge">Total: {{ totalStats() }}</span>
+          </h2>
+        </div>
+        <button class="ctrl-btn" (click)="toggleChartMode()">
+          {{ showRadar() ? "≡ Barras" : "⬡ Radar" }}
+        </button>
+      </div>
+
+      @if (showRadar()) {
+        <div class="radar-wrap">
+          <svg viewBox="0 0 200 200" class="radar-svg" aria-hidden="true">
+            @for (g of radarGrid; track g.frac) {
+              <polygon [attr.points]="g.points" class="radar-grid-hex" />
+            }
+            @for (axis of radarAxes; track $index) {
+              <line
+                x1="100"
+                y1="100"
+                [attr.x2]="axis.x2"
+                [attr.y2]="axis.y2"
+                class="radar-axis"
+              />
+            }
+            <polygon [attr.points]="radarPolygon()" class="radar-poly" />
+            @for (label of radarLabels; track label.name) {
+              <text [attr.x]="label.x" [attr.y]="label.y" class="radar-label">
+                {{ label.name }}
+              </text>
+            }
+          </svg>
+        </div>
+      } @else {
+        <div class="stats-list mt-3">
+          @for (stat of p.stats; track stat.stat.name) {
+            <div class="stat-row">
+              <span class="stat-name">{{ stat.stat.name }}</span>
+              <span class="stat-value">{{ stat.base_stat }}</span>
+              <div class="stat-track" aria-hidden="true">
+                <div
+                  class="stat-fill"
+                  [style.width.%]="statPercent(stat.base_stat)"
+                  [style.background]="statColor(stat.base_stat)"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- EVOLUTION CHAIN -->
+    @if (evolutionStages().length > 1) {
+      <div class="section-card mb-4">
+        <h2 class="section-title">Cadeia de Evolução</h2>
+        <div class="evo-chain">
+          @for (stage of evolutionStages(); track $index) {
+            @if ($index > 0) {
+              <div class="evo-arrow-col">
+                <span class="evo-trigger">{{
+                  evolutionTriggers()[$index - 1]
+                }}</span>
+                <span class="evo-arrow-icon">→</span>
+              </div>
+            }
+            <div class="evo-stage">
+              @for (member of stage; track member.id) {
+                <a
+                  [routerLink]="['/pokemon', member.name]"
+                  class="evo-member"
+                  [class.evo-current]="member.id === p.id"
+                >
+                  <img
+                    [src]="
+                      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' +
+                      member.id +
+                      '.png'
+                    "
+                    [alt]="member.name"
+                    class="evo-img"
+                  />
+                  <span class="evo-name text-capitalize">{{
+                    member.name
+                  }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ADJACENT -->
     @if (adjacentPokemon().length > 0) {
-      <div class="adjacent-section">
-        <h2 class="adjacent-title">Pokémon adjacentes</h2>
+      <div class="section-card mb-4">
+        <h2 class="section-title">Pokémon adjacentes</h2>
         <div class="adjacent-grid">
           @for (adj of adjacentPokemon(); track adj.id) {
             <app-pokemon-card
@@ -145,6 +377,46 @@
             />
           }
         </div>
+      </div>
+    }
+
+    <!-- SPRITE GALLERY -->
+    @if (spriteGallery().length > 0) {
+      <div class="section-card mb-4">
+        <h2 class="section-title">🎨 Sprites</h2>
+        <div class="sprite-gallery">
+          @for (sprite of spriteGallery(); track sprite.label) {
+            <div class="sprite-item">
+              <img
+                [src]="sprite.src"
+                [alt]="sprite.label"
+                class="sprite-thumb"
+              />
+              <span class="sprite-label">{{ sprite.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- MOVES — deferred until scrolled into view -->
+    @defer (on viewport) {
+      @if (levelUpMoves().length > 0) {
+        <div class="section-card mb-4">
+          <h2 class="section-title">⚔️ Movimentos por nível</h2>
+          <div class="moves-grid">
+            @for (move of levelUpMoves(); track move.name) {
+              <div class="move-item">
+                <span class="move-level">Nv.{{ move.level }}</span>
+                <span class="move-name">{{ move.name }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    } @placeholder {
+      <div class="section-card mb-4 section-placeholder">
+        <span class="text-muted">⚔️ Movimentos a carregar...</span>
       </div>
     }
   }

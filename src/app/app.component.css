@@ -138,6 +138,45 @@
   padding: 2rem 1rem;
 }
 
+/* Header actions (dark toggle + fav counter) */
+.dex-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.dark-toggle {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.dark-toggle:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: rotate(20deg) scale(1.1);
+}
+
+.fav-counter {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
 @media (max-width: 575px) {
   .dex-header {
     padding: 1rem;

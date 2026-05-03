@@ -1,65 +1,157 @@
 <div class="container py-4">
+  <!-- Hero card -->
   <div class="hero-card mb-4">
     <div class="row align-items-center g-4">
-      <div class="col-lg-8">
+      <div class="col-lg-7">
         <p class="eyebrow mb-2">Pokédex em tempo real</p>
         <h2 class="mb-3">Todos os Pokémon, com scroll infinito.</h2>
         <p class="hero-copy mb-0">
-          Os dados vêm diretamente da PokeAPI. Usa a pesquisa para filtrar os
-          Pokémon carregados e faz scroll para carregar mais.
+          Os dados vêm diretamente da PokéAPI. Usa a pesquisa ou os filtros de
+          tipo para encontrar qualquer Pokémon.
         </p>
       </div>
 
-      <div class="col-lg-4">
+      <div class="col-lg-5">
         <div class="stats-card">
-          <span class="stats-label">Pokémon carregados</span>
-          <strong>{{ pokemons.length }}</strong>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stats-label">Carregados</span>
+              <strong>{{ pokemons().length }}</strong>
+            </div>
+            <div class="stat-item">
+              <span class="stats-label">Favoritos</span>
+              <strong class="fav-count">{{ favoriteService.count() }}</strong>
+            </div>
+            @if (selectedType()) {
+              <div class="stat-item">
+                <span class="stats-label">Tipo</span>
+                <strong
+                  class="text-capitalize"
+                  [style.color]="typeColor(selectedType())"
+                  >{{ selectedType() }}</strong
+                >
+              </div>
+            }
+          </div>
+
+          @if (pokemonOfDay(); as pod) {
+            <div class="pod-row">
+              <span class="pod-label">🌟 Pokémon do dia</span>
+              <a [routerLink]="['/pokemon', pod.name]" class="pod-link">
+                <img [src]="pod.image" [alt]="pod.name" class="pod-img" />
+                <span class="pod-name text-capitalize">{{ pod.name }}</span>
+              </a>
+            </div>
+          }
         </div>
       </div>
     </div>
   </div>
 
-  <div class="toolbar-card mb-4">
-    <label for="search" class="form-label">Pesquisar Pokémon</label>
-    <input
-      id="search"
-      type="text"
-      class="form-control form-control-lg"
-      placeholder="Ex.: pikachu"
-      [(ngModel)]="searchTerm"
-    />
+  <!-- Type filter chips -->
+  <div class="type-filter-wrap mb-3">
+    <button
+      class="type-chip"
+      [class.active]="!selectedType() && !showFavoritesOnly()"
+      (click)="selectedType.set(''); showFavoritesOnly.set(false)"
+    >
+      Todos
+    </button>
+    <button
+      class="type-chip fav-chip"
+      [class.active]="showFavoritesOnly()"
+      (click)="showFavoritesOnly.update(v => !v)"
+    >
+      ♥ Favoritos
+    </button>
+    @for (type of pokemonTypes; track type) {
+      <button
+        class="type-chip"
+        [class.active]="selectedType() === type"
+        [style.--chip-color]="typeColor(type)"
+        (click)="selectType(type)"
+      >
+        {{ type }}
+      </button>
+    }
   </div>
 
-  @if (errorMessage) {
+  <!-- Toolbar: search + sort -->
+  <div class="toolbar-card mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-8">
+        <label for="search" class="form-label fw-bold">Pesquisar Pokémon</label>
+        <input
+          id="search"
+          type="text"
+          class="form-control form-control-lg"
+          placeholder="Ex.: pikachu, bulbasaur..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+      <div class="col-md-4">
+        <p class="form-label fw-bold mb-2">Ordenar por</p>
+        <div class="sort-btns">
+          <button
+            class="sort-btn"
+            [class.active]="sortMode() === 'id'"
+            (click)="sortMode.set('id')"
+          >
+            # ID
+          </button>
+          <button
+            class="sort-btn"
+            [class.active]="sortMode() === 'name'"
+            (click)="sortMode.set('name')"
+          >
+            A – Z
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
     <div class="alert alert-danger shadow-sm" role="alert">
-      {{ errorMessage }}
+      {{ errorMessage() }}
     </div>
   }
 
-  @if (isLoading) {
+  @if (isLoading() || isTypeLoading()) {
     <div class="loading-state text-center py-5">
       <div class="spinner-border text-danger" role="status"></div>
       <p class="mt-3 mb-0">A carregar Pokémon...</p>
     </div>
   } @else {
-    @if (filteredPokemons.length === 0 && searchTerm) {
+    @if (
+      displayPokemons().length === 0 &&
+      (searchTerm() || selectedType() || showFavoritesOnly())
+    ) {
       <div class="empty-state text-center">
-        <p class="mb-1">Nenhum Pokémon encontrado para "{{ searchTerm }}".</p>
-        <small>Continua a fazer scroll para carregar mais Pokémon.</small>
+        @if (showFavoritesOnly() && favoriteService.count() === 0) {
+          <p class="mb-1">Ainda não tens Pokémon favoritos!</p>
+          <small>Clica no ♡ nos cards para guardar.</small>
+        } @else if (selectedType()) {
+          <p class="mb-1">
+            Nenhum Pokémon do tipo <strong>{{ selectedType() }}</strong
+            >.
+          </p>
+        } @else {
+          <p class="mb-1">Nenhum Pokémon para "{{ searchTerm() }}".</p>
+          <small>Continua a fazer scroll para carregar mais.</small>
+        }
       </div>
     }
 
-    @if (feedbackMessage) {
+    @if (feedbackMessage()) {
       <div class="alert alert-warning shadow-sm mb-3" role="alert">
-        {{ feedbackMessage }}
+        {{ feedbackMessage() }}
       </div>
     }
 
     <div class="row g-4">
-      @for (
-        pokemon of filteredPokemons;
-        track trackByPokemonId($index, pokemon)
-      ) {
+      @for (pokemon of displayPokemons(); track pokemon.id) {
         <div class="col-sm-6 col-lg-4 col-xl-3">
           <app-pokemon-card
             [pokemon]="pokemon"
@@ -71,10 +163,10 @@
     </div>
   }
 
-  <!-- Sentinel element: IntersectionObserver watches this to trigger loadMore() -->
+  <!-- Sentinel: IntersectionObserver watches this to trigger loadMore() -->
   <div #sentinel class="scroll-sentinel" aria-hidden="true"></div>
 
-  @if (isLoadingMore) {
+  @if (isLoadingMore()) {
     <div class="load-more-spinner text-center py-4">
       <div class="spinner-border text-danger" role="status">
         <span class="visually-hidden">A carregar mais...</span>
@@ -83,9 +175,9 @@
     </div>
   }
 
-  @if (!hasMore && pokemons.length > 0) {
+  @if (!hasMore() && pokemons().length > 0 && !selectedType()) {
     <p class="text-center text-muted small py-3">
-      Todos os {{ pokemons.length }} Pokémon carregados!
+      Todos os {{ pokemons().length }} Pokémon carregados!
     </p>
   }
 </div>

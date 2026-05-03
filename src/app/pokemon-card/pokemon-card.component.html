@@ -1,38 +1,92 @@
 <div
   class="card pokemon-card h-100 border-0 shadow-sm"
-  [class.in-team]="isInTeam"
+  [class.in-team]="isInTeam()"
+  [style.transform]="tiltTransform"
 >
+  <!-- Pokéball catch animation overlay -->
+  @if (catching) {
+    <div class="catch-fx" aria-hidden="true">
+      <svg class="catch-ball" viewBox="0 0 60 60">
+        <circle
+          cx="30"
+          cy="30"
+          r="27"
+          fill="none"
+          stroke="#1f2937"
+          stroke-width="3"
+        />
+        <path d="M3,30 A27,27 0 0,1 57,30 Z" fill="#dc2626" />
+        <path d="M57,30 A27,27 0 0,1 3,30 Z" fill="#fff" />
+        <line
+          x1="3"
+          y1="30"
+          x2="57"
+          y2="30"
+          stroke="#1f2937"
+          stroke-width="3"
+        />
+        <circle
+          cx="30"
+          cy="30"
+          r="8"
+          fill="#f1f5f9"
+          stroke="#1f2937"
+          stroke-width="3"
+        />
+        <circle cx="30" cy="30" r="3" fill="#94a3b8" />
+      </svg>
+    </div>
+  }
+
+  <!-- Favorite button -->
+  <button
+    class="fav-btn"
+    [class.is-fav]="favoriteService.isFavorite(pokemon().id)"
+    (click)="favoriteService.toggle(pokemon().id)"
+    [attr.aria-label]="
+      favoriteService.isFavorite(pokemon().id)
+        ? 'Remover dos favoritos'
+        : 'Adicionar aos favoritos'
+    "
+  >
+    {{ favoriteService.isFavorite(pokemon().id) ? '♥' : '♡' }}
+  </button>
+
   <a
     class="pokemon-image-wrap"
-    [routerLink]="['/pokemon', pokemon.name]"
-    [attr.aria-label]="'Ver detalhes de ' + pokemon.name"
+    [routerLink]="['/pokemon', pokemon().name]"
+    [attr.aria-label]="'Ver detalhes de ' + pokemon().name"
   >
-    <img [src]="pokemon.image" [alt]="pokemon.name" class="pokemon-image" />
-    @if (isInTeam) {
+    <img
+      [src]="pokemon().image"
+      [alt]="pokemon().name"
+      class="pokemon-image"
+    />
+    @if (isInTeam()) {
       <span class="in-team-badge" aria-label="Na equipa">✓</span>
     }
   </a>
 
   <div class="card-body text-center">
-    <span class="pokemon-number">#{{ pokemon.id }}</span>
+    <span class="pokemon-number">#{{ pokemon().id }}</span>
     <h3 class="pokemon-name text-capitalize">
-      <a [routerLink]="['/pokemon', pokemon.name]" class="pokemon-name-link">{{
-        pokemon.name
-      }}</a>
+      <a [routerLink]="['/pokemon', pokemon().name]" class="pokemon-name-link">
+        {{ pokemon().name }}
+      </a>
     </h3>
     <button
       class="btn btn-sm mt-2 w-100"
-      [class.btn-danger]="!isInTeam"
-      [class.btn-outline-secondary]="isInTeam"
-      [disabled]="isInTeam"
-      (click)="addToTeam.emit(pokemon)"
+      [class.btn-danger]="!isInTeam()"
+      [class.btn-outline-secondary]="isInTeam()"
+      [disabled]="isInTeam()"
+      (click)="onAddToTeam()"
       [attr.aria-label]="
-        isInTeam
-          ? pokemon.name + ' já está na equipa'
-          : 'Adicionar ' + pokemon.name + ' à equipa'
+        isInTeam()
+          ? pokemon().name + ' já está na equipa'
+          : 'Adicionar ' + pokemon().name + ' à equipa'
       "
     >
-      @if (isInTeam) {
+      @if (isInTeam()) {
         Na equipa
       } @else {
         + Equipa

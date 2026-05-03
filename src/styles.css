@@ -18,3 +18,59 @@ body {
   background-size: 100px 100px;
   min-height: 100vh;
 }
+
+/* ── Page enter animation ───────────────────────────────────────────────── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+router-outlet + * {
+  animation: pageEnter 0.35s ease both;
+}
+
+/* ── Scrollbar polish ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(220, 38, 38, 0.25);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.5);
+}
+
+/* ── Selection color ────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(220, 38, 38, 0.2);
+  color: #111827;
+}
+
+/* ── Dark mode ─────────────────────────────────────────────────────────── */
+body.dark-mode {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .hero-card,
+:host-context(body.dark-mode) .toolbar-card,
+:host-context(body.dark-mode) .loading-state,
+:host-context(body.dark-mode) .empty-state,
+:host-context(body.dark-mode) .section-card,
+:host-context(body.dark-mode) .detail-card {
+  background: rgba(15, 23, 42, 0.96);
+  border-color: rgba(148, 163, 184, 0.12);
+  color: #e2e8f0;
+}
+
+/* Dark mode applied via body class – works with component-scoped CSS via host-context */

@@ -12,6 +12,20 @@
       <h1 class="dex-title">Pokédex</h1>
       <p class="dex-subtitle">Escolhe a tua equipa</p>
     </div>
+    <div class="dex-header-actions">
+      @if (favoriteService.count() > 0) {
+        <span class="fav-counter" aria-label="Favoritos">
+          ♥ {{ favoriteService.count() }}
+        </span>
+      }
+      <button
+        class="dark-toggle"
+        (click)="toggleDark()"
+        [attr.aria-label]="darkMode() ? 'Modo claro' : 'Modo escuro'"
+      >
+        {{ darkMode() ? "☀️" : "🌙" }}
+      </button>
+    </div>
     <div class="dex-ball-deco" aria-hidden="true"></div>
   </header>
 
