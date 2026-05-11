@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build -- --configuration production --base-href "/pokedex-app/"
+        run: npm run build -- --configuration production --base-href "/Pokedex_ProjectTW/"
 
       - name: SPA fallback
         run: cp dist/pokedex-app/browser/index.html dist/pokedex-app/browser/404.html
@@ -40,6 +40,12 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/pokedex-app/browser
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+        # Path of the directory containing the static assets to upload
+        path: './dist'
 
   deploy:
     needs: build
